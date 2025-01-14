@@ -11,3 +11,19 @@ tokenizer = AutoTokenizer.from_pretrained(model_name) # AutoTokenizer tokenizes 
 model = AutoModelForCausalLM.from_pretrained(model_name) # AutoModelForCasualLM basically loads a pre-trained model for casual language modeling (used for text generation)
 # Initialize the conversation history
 conversation_history = None
+
+# Chat loop
+while True:
+    user_input = input("You: ")
+    if user_input.lower() == "exit":
+        print("Exiting chatbot. Goodbye!")
+        break
+
+    # Encode the new user input and add it to the conversation history
+    new_input_ids = tokenizer.encode(user_input + tokenizer.eos_token, return_tensors="pt")
+
+    # Add the new input to the existing conversation history
+    if conversation_history is not None and len(conversation_history) > 0:
+      bot_input_ids = torch.cat([conversation_history, new_input_ids], dim=-1)
+    else:
+      bot_input_ids = new_input_ids
