@@ -27,3 +27,18 @@ while True:
       bot_input_ids = torch.cat([conversation_history, new_input_ids], dim=-1)
     else:
       bot_input_ids = new_input_ids
+
+    # Generate a response
+    conversation_history = model.generate(
+        bot_input_ids,
+        max_length=1000, # Limit to avoid exceeding token capacity
+        pad_token_id=tokenizer.eos_token_id,
+        temperature=0.7,
+        top_p=0.9,
+        top_k=200,
+        do_sample=True
+    )
+
+    # Decode and print the response
+    bot_reply = tokenizer.decode(conversation_history[:, bot_input_ids.shape[-1]:][0], skip_special_tokens=True)
+    print("Bot:", bot_reply)
